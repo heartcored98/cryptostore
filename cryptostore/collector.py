@@ -36,7 +36,6 @@ class DeltaBook(RedisStreamCallback):
     }
     Then, super().write(feed, pair, timestamp, data) will write to the redis
     """
-
     default_key = L2_BOOK
 
     def __init__(self, **kwargs):
