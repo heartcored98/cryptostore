@@ -40,21 +40,29 @@ class DeltaBook(RedisStreamCallback):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.book = None
+        self.book = dict()
         self.l2_book = BookCallback(self.handle_book)
 
     async def handle_book(self, feed, pair, book, timestamp):
         """Handle full book updates."""
-        # pprint(book)
-        if not self.book:
-            self.book = deepcopy(book)
+
+        if pair not in self.book:
+            self.book[pair] = deepcopy(book)
+            LOG.warn("*********************************")
+            LOG.info(f"book set with feed {feed} pair {pair}")
+            LOG.warn("*********************************")
+        else:
+            LOG.warn("----------------------------------")
+            LOG.info(f"full update with feed {feed} pair {pair}")
+            LOG.warn("---------------------------------")
+            self.book[pair] = deepcopy(book)
 
     async def __call__(self, *, feed, pair, delta, timestamp):
         delta_update = {"bid": [], "ask": []}
         for side in (BID, ASK):
             for price, size in delta[side]:
-                if price in self.book[side]:
-                    size_delta = size - self.book[side][price]
+                if price in self.book[pair][side]:
+                    size_delta = size - self.book[pair][side][price]
                 else:
                     size_delta = size
                 delta_update[side].append((price, size_delta))
@@ -130,6 +138,9 @@ class Collector(Process):
             elif callback_type == TICKER:
                 cb[TICKER] = [ticker_cb(**kwargs)]
             elif callback_type == L2_BOOK:
+                LOG.info("======== kwargs =======")
+                LOG.info(kwargs)
+                LOG.info("=======================")
                 deltabook = DeltaBook(**kwargs)
                 # [book_cb(key=L2_BOOK, **kwargs)]
                 cb[L2_BOOK] = [deltabook.l2_book]
