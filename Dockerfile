@@ -1,12 +1,6 @@
 FROM python:3.7.3-stretch
 
-COPY config-docker.yaml /config.yaml
 COPY setup.py /
-COPY cryptostore /cryptostore
-
-## Add any keys, config files, etc needed here
-# COPY access-key.json /
-
 
 RUN apt install gcc git
 
@@ -19,7 +13,13 @@ RUN pip install --no-cache-dir arctic
 
 ## Add any extra dependencies you might have
 # eg RUN pip install --no-cache-dir boto3
+COPY cryptostore /cryptostore
 
 RUN pip install -e .
+
+COPY config-docker.yaml /config.yaml
+
+## Add any keys, config files, etc needed here
+# COPY access-key.json /
 
 ENTRYPOINT [ "cryptostore" ]

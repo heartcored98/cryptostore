@@ -20,9 +20,9 @@ def chunk(iterable, length):
 class InfluxDB(Store):
     def __init__(self, config: dict):
         self.data = None
-        self.host = config.host
-        self.db = config.db
-        self.addr = f"{config.host}/write?db={config.db}"
+        self.addr = f"{config.addr}/api/v2/write?org={config.org}&bucket={config.bucket}&precision={config.precision}"
+        self.headers = {"Authorization": f"Token {config.token}"}
+        
         if 'create' in config and config.create:
             r = requests.post(f'{config.host}/query', data={'q': f'CREATE DATABASE {config.db}'})
             r.raise_for_status()
@@ -79,7 +79,7 @@ class InfluxDB(Store):
         # Tuning docs indicate 5k is the ideal chunk size for batch writes
         for c in chunk(agg, 5000):
             c = '\n'.join(c)
-            r = requests.post(self.addr, data=c)
+            r = requests.post(self.addr, data=c, headers=self.headers)
             r.raise_for_status()
         self.data = None
 
