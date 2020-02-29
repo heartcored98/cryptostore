@@ -1,5 +1,12 @@
 ## Changelog
 
+### 0.2.1. (2020-02-29)
+  * Feature: InfluxDB 2.0 authentication support
+  * Feature: l2 order book write purely delta. 
+  * Feature: Side has 4 state (ask_order, ask_cancel, bid_order, bid_cancel) depends on the side and amount
+  * Bugfix : Redis add socket argument
+  * Bugfix : Add max memory argument
+
 ### 0.1.1 (2019-11-27)
   * Feature: Rework backfill to operate even when store's data differs
   * Bugfix: Log exception/traceback when aggregator process dies
