@@ -36,6 +36,7 @@ class InfluxDB(Store):
         agg = []
         # influx cant handle duplicate data (?!) so we need to
         # incremement timestamps on data that have the same timestamp
+        # pair, side is inserted as tag for grouping
         used_ts = set()
         if data_type == TRADES:
             for entry in self.data:
@@ -44,9 +45,9 @@ class InfluxDB(Store):
                     ts += 1
                 used_ts.add(ts)
                 if 'id' in entry:
-                    agg.append(f'{data_type}-{exchange},pair={pair} side="{entry["side"]}",id="{entry["id"]}",amount={entry["amount"]},price={entry["price"]},timestamp={entry["timestamp"]} {ts}')
+                    agg.append(f'{data_type}-{exchange},pair={pair},side={entry["side"]} id="{entry["id"]}",amount={entry["amount"]},price={entry["price"]},timestamp={entry["timestamp"]} {ts}')
                 else:
-                    agg.append(f'{data_type}-{exchange},pair={pair} side="{entry["side"]}",amount={entry["amount"]},price={entry["price"]},timestamp={entry["timestamp"]} {ts}')
+                    agg.append(f'{data_type}-{exchange},pair={pair},side={entry["side"]} amount={entry["amount"]},price={entry["price"]},timestamp={entry["timestamp"]} {ts}')
         elif data_type == TICKER:
             for entry in self.data:
                 ts = int(Decimal(entry["timestamp"]) * 1000000000)
@@ -59,7 +60,13 @@ class InfluxDB(Store):
                     ts += 1
                 used_ts.add(ts)
 
-                agg.append(f'{data_type}-{exchange},pair={pair},delta={entry["delta"]} side="{entry["side"]}",timestamp={entry["timestamp"]},price={entry["price"]},amount={entry["size"]} {ts}')
+                # positive size order means newly created order, negative size order means cancelation. 
+                if entry["size"] >= 0:
+                    entry["side"] += "_order"
+                else:
+                    entry["side"] += "_cancel"
+
+                agg.append(f'{data_type}-{exchange},pair={pair},delta={entry["delta"]},side={entry["side"]} timestamp={entry["timestamp"]},price={entry["price"]},amount={entry["size"]} {ts}')
         elif data_type == L3_BOOK:
             for entry in self.data:
                 ts = int(Decimal(entry["timestamp"]) * 1000000000)
@@ -67,7 +74,13 @@ class InfluxDB(Store):
                     ts += 1
                 used_ts.add(ts)
 
-                agg.append(f'{data_type}-{exchange},pair={pair},delta={entry["delta"]} side="{entry["side"]}",id="{entry["order_id"]}",timestamp={entry["timestamp"]},price="{entry["price"]}",amount="{entry["size"]}" {ts}')
+                # positive size order means newly created order, negative size order means cancelation. 
+                if entry["size"] >= 0:
+                    entry["side"] += "_order"
+                else:
+                    entry["side"] += "_cancel"
+
+                agg.append(f'{data_type}-{exchange},pair={pair},delta={entry["delta"]},side={entry["side"]} id="{entry["order_id"]}",timestamp={entry["timestamp"]},price="{entry["price"]}",amount="{entry["size"]}" {ts}')
                 ts += 1
         elif data_type == FUNDING:
             for entry in self.data:
@@ -89,3 +102,4 @@ class InfluxDB(Store):
             return r.json()['results'][0]['series'][0]['values'][0][1]
         except Exception:
             return None
+            

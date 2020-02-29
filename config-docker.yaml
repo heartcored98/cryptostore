@@ -7,31 +7,114 @@ redis:
     port: 6379
     del_after_read: true
     start_flush: true
+    socket: null
 
 exchanges:
-    BITMEX:
+    BINANCE:
         l2_book:
-            symbols: [XBTUSD]
-            book_depth: 10
-        trades: [XBTUSD]
-    COINBASE:
-        l3_book:
-            symbols: [BTC-USD, ETH-USD]
+            symbols:
+                [
+                    BTC-USDT,
+                    ETH-USDT,
+                    ETC-USDT,
+                    XRP-USDT,
+                    BCH-USDT,
+                    LTC-USDT,
+                    EOS-USDT,
+                    XMR-USDT,
+                    DASH-USDT,
+                    TRX-USDT,
+                    XTZ-USDT,
+                    QTUM-USDT,
+                    OMG-USDT,
+                ]
             book_delta: true
-            book_interval: 10000
-        trades: [BTC-USD, ETH-USD, ETH-BTC]
+        trades:
+            [
+                BTC-USDT,
+                ETH-USDT,
+                ETC-USDT,
+                XRP-USDT,
+                BCH-USDT,
+                LTC-USDT,
+                EOS-USDT,
+                XMR-USDT,
+                DASH-USDT,
+                TRX-USDT,
+                XTZ-USDT,
+                QTUM-USDT,
+                OMG-USDT,
+            ]
+    BINANCE_US:
+        l2_book:
+            symbols:
+                [
+                    BTC-USDT,
+                    ETH-USDT,
+                    ETC-USDT,
+                    XRP-USDT,
+                    BCH-USDT,
+                    LTC-USDT,
+                    QTUM-USDT,
+                ]
+            book_delta: true
+        trades:
+            [
+                BTC-USDT,
+                ETH-USDT,
+                ETC-USDT,
+                XRP-USDT,
+                BCH-USDT,
+                LTC-USDT,
+                QTUM-USDT,
+            ]
+    BITFINEX:
+        l2_book:
+            symbols:
+                [
+                    BTC-USD,
+                    ETH-USD,
+                    ETC-USD,
+                    XRP-USD,
+                    BSV-USD,
+                    LTC-USD,
+                    EOS-USD,
+                    XMR-USD,
+                    XLM-USD,
+                    TRX-USD,
+                    XTZ-USD,
+                    OMG-USD,
+                ]
+            book_delta: true
+        trades:
+            [
+                BTC-USD,
+                ETH-USD,
+                ETC-USD,
+                XRP-USD,
+                BSV-USD,
+                LTC-USD,
+                EOS-USD,
+                XMR-USD,
+                XLM-USD,
+                TRX-USD,
+                XTZ-USD,
+                OMG-USD,
+            ]
 
-storage: [arctic]
-arctic: mongodb://mongo:27017
+storage: [influx]
 
-storage_interval: 60
+influx:
+    addr: "<InfluxDB URL>"
+    org: "<ORGANIZATION>"
+    bucket: "<BUCKET_NAME>"
+    token: "<InfluxDB TOKEN>"
+    precision: ns
+
+storage_interval: 2
 
 plugins:
-  backfill:
-    module: [cryptostore.plugin.backfill, Backfill]
-    config: config.yaml
+    backfill:
+        module: [cryptostore.plugin.backfill, Backfill]
+        config: config.yaml
 
-backfill:
-    COINBASE:
-        BTC-USD:
-            start: '2017-01-01'
