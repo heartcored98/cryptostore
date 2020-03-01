@@ -6,6 +6,7 @@
   * Feature: Side has 4 state (ask_order, ask_cancel, bid_order, bid_cancel) depends on the side and amount
   * Bugfix : Redis add socket argument
   * Bugfix : Add max memory argument
+  * Bugfix : Exclude Orderbook delta with zero-size change
 
 ### 0.1.1 (2019-11-27)
   * Feature: Rework backfill to operate even when store's data differs
