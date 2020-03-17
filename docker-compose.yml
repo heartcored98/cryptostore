@@ -1,4 +1,4 @@
-version: "3.7"
+version: "2.2"
 services:
   cryptostore:
     logging:
@@ -18,5 +18,5 @@ services:
     image: redis:5.0.5
     expose:
       - 6379
-    command: ["redis-server", "--save", "''", "--appendonly", "no"]
+    command: ["redis-server", "--maxmemory", "3gb", "--maxmemory-policy", "allkeys-lru", "--save", "''", "--appendonly", "no"]
 

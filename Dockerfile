@@ -17,7 +17,7 @@ COPY cryptostore /cryptostore
 
 RUN pip install -e .
 
-COPY config-docker.yaml /config.yaml
+COPY config-docker-private.yaml /config.yaml
 
 ## Add any keys, config files, etc needed here
 # COPY access-key.json /

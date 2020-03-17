@@ -63,9 +63,12 @@ class DeltaBook(RedisStreamCallback):
             for price, size in delta[side]:
                 if price in self.book[pair][side]:
                     size_delta = size - self.book[pair][side][price]
+
                 else:
                     size_delta = size
-                delta_update[side].append((price, size_delta))
+
+                if abs(size_delta) > 0:
+                    delta_update[side].append((price, size_delta))
 
         data = {'timestamp': timestamp, 'delta': True, BID: {}, ASK: {}}
         book_delta_convert(delta_update, data, convert=self.numeric_type)
