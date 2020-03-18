@@ -43,7 +43,7 @@ class DeltaBook(RedisStreamCallback):
         self.book = dict()
         self.l2_book = BookCallback(self.handle_book)
 
-    async def handle_book(self, feed, pair, book, timestamp):
+    async def handle_book(self, feed, pair, book, timestamp, receipt_timestamp):
         """Handle full book updates."""
 
         if pair not in self.book:
@@ -57,7 +57,7 @@ class DeltaBook(RedisStreamCallback):
             LOG.warn("---------------------------------")
             self.book[pair] = deepcopy(book)
 
-    async def __call__(self, *, feed, pair, delta, timestamp):
+    async def __call__(self, *, feed, pair, delta, timestamp, receipt_timestamp):
         delta_update = {"bid": [], "ask": []}
         for side in (BID, ASK):
             for price, size in delta[side]:
@@ -72,11 +72,11 @@ class DeltaBook(RedisStreamCallback):
 
         data = {'timestamp': timestamp, 'delta': True, BID: {}, ASK: {}}
         book_delta_convert(delta_update, data, convert=self.numeric_type)
-        await self.write(feed, pair, timestamp, data)
+        await self.write(feed, pair, timestamp, receipt_timestamp, data)
 
-    async def write(self, feed, pair, timestamp, data):
+    async def write(self, feed, pair, timestamp, receipt_timestam, data):
         data = {'data': json.dumps(data)}
-        await super().write(feed, pair, timestamp, data)
+        await super().write(feed, pair, timestamp, receipt_timestam, data)
 
 
 class Collector(Process):
