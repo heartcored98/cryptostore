@@ -18,7 +18,7 @@ influx:
     token: "<InfluxDB TOKEN>"
     precision: ns
 
-storage_interval: 1
+storage_interval: 0.1
     
 
 exchanges:
