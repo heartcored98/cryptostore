@@ -53,7 +53,7 @@ You can run Cryptostore in a docker container. A Dockerfile and a docker-compose
 * [ ] Missing data detection and correction (for exchanges that support historical data, typically only trade data)
 * [ ] Storing data to MongoDB
 * [ ] Support for enabling computation and storage of diverse metrics in parallel with data collection (eg. configurable OHLCV)
-
+* [ ] BitMex delta book with updated 0.3.2 cryptostore
 
 ## Contributing
 Issues and PRs are welcomed. If you'd like to discuss ongoing development please join the [slack](https://join.slack.com/t/cryptofeed-dev/shared_invite/enQtNjY4ODIwODA1MzQ3LTIzMzY3Y2YxMGVhNmQ4YzFhYTc3ODU1MjQ5MDdmY2QyZjdhMGU5ZDFhZDlmMmYzOTUzOTdkYTZiOGUwNGIzYTk)
